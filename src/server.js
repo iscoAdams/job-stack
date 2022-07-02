@@ -11,6 +11,8 @@ import cors from 'cors';
 import xss from "xss-clean";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
+import swaggerUI from "swagger-ui-express";
+import YAML from "yamljs";
 // import 'express-async-errors'
 const app = express();
 app.use(helmet());
@@ -19,14 +21,16 @@ app.use(xss());
 app.use(rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100 // limit each IP to 100 requests per windowMs
-    }));
+}));
 app.use(express.json());
 app.set('trust proxy', 1)
 
 dotenv.config();
 app.get('/', (req, res) => {
-  res.send("<h1 style = color:BurlyWood;font-family:verdana;text-align:center>welcome abroad🚀</h1>");
+    res.send("<h1 style = color:BurlyWood;font-family:verdana;text-align:center>welcome abroad🚀</h1> <a href ='/api-docs'>have a look on the api-docs</a>"); 
 })
+const swaggerDoc = YAML.load("./swagger.yaml");
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDoc));
 app.use('/api/v1/jobs',auth,jobRoutes);
 app.use('/api/v1',registerRoute);
 app.use('/api/v1',loginRoute);
